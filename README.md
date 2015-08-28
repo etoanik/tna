@@ -1,6 +1,6 @@
 # TransAsia
 
-This is a Python code for checking TransAisa Airways' passenger ticket.
+This is a Python code for checking TransAisa Airways' passenger ticket available.
 
 ## Requirement
 
@@ -10,6 +10,6 @@ This is a Python code for checking TransAisa Airways' passenger ticket.
 
 ## Usage
 
-```sh
+```bash
 python tna.py
 ```
