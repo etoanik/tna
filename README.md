@@ -1,9 +1,15 @@
-# tna
+# TransAsia
 
-This is a Python code for checking TransAisa Airways' passenger ticket
+This is a Python code for checking TransAisa Airways' passenger ticket.
 
 ## Requirement
 
 1. Python 2.7
 2. Requests
 3. lxml
+
+## Usage
+
+```sh
+python tna.py
+```
