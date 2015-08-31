@@ -2,24 +2,25 @@
 
 import sys
 import argparse
+import StringIO
 import requests
+from lxml import etree
 
-STATION_CODE = ['TPE', 'KIX']
+STATION_CODE = ['TPE', 'TSA', 'KHH', 'KIX', 'NRT', 'OKA', 'CTS', 'KHD', 'AKJ']
 
 
 class Args():
     pass
 
 if __name__ == '__main__':
-
-    args = Args()
     
     # arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--departure', choices=STATION_CODE, default='TPE', help='Departure Station Code')
-    parser.add_argument('-a', '--arrival', choices=STATION_CODE, required=True, help='Arrival Station Code')
-    parser.add_argument('-t', '--date', required=True, help='Departure Date (YYYY/MM/DD)')
+    parser.add_argument('-a', '--arrival', choices=STATION_CODE, default='KIX', help='Arrival Station Code')
+    parser.add_argument('-t', '--date', default='2016/04/01', help='Departure Date (YYYY/MM/DD)')
 
+    args = Args()
     parser.parse_args(namespace=args)
 
     # request service
@@ -27,7 +28,7 @@ if __name__ == '__main__':
         # 首頁
         response = session.post('http://gessl.tna.com.tw', params={'culture': 'zh-hant'})
         # 200
-        assert  response.status_code == 200
+        assert response.status_code == 200
 
         # 查詢航班
         response = session.post('http://gessl.tna.com.tw/Search/Search', params={
@@ -53,10 +54,14 @@ if __name__ == '__main__':
             'PromoCode': '',
         })
         # 200
-        assert  response.status_code == 200
-
-        # 析HTML
-        print response.text
-
+        assert response.status_code == 200
         
-
+        # 解析HTML
+        parser = etree.HTMLParser(encoding=response.encoding, remove_blank_text=True)
+        root = etree.HTML(response.text, parser=parser)
+        # result = etree.tostring(root, encoding=sys.stdout.encoding, pretty_print=True, method='html')
+        # 查詢有結果
+        if root.xpath("//table[@class='select_table table_type1']/tbody//input"):
+            pass
+        
+        
