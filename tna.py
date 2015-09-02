@@ -1,28 +1,28 @@
 # -*- coding: utf-8 -*-
-
 import sys
 import argparse
 import StringIO
+import smtplib
 import requests
+from email.mime.text import MIMEText
 from lxml import etree
-
-STATION_CODE = ['TPE', 'TSA', 'KHH', 'KIX', 'NRT', 'OKA', 'CTS', 'KHD', 'AKJ']
 
 
 class Args():
     pass
 
+
 if __name__ == '__main__':
     
     # arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--departure', choices=STATION_CODE, default='TPE', help='Departure Station Code')
-    parser.add_argument('-a', '--arrival', choices=STATION_CODE, default='KIX', help='Arrival Station Code')
-    parser.add_argument('-t', '--date', default='2016/04/01', help='Departure Date (YYYY/MM/DD)')
+    parser.add_argument('-a', dest='arrival', choices=['KIX', 'NRT', 'OKA', 'CTS', 'KHD', 'AKJ'], required=True, help='Arrival Station Code')
+    parser.add_argument('-d', dest='date', metavar='YYYY/MM/DD', required=True, help='Departure Date')
+    parser.add_argument('-m', dest='gmail', metavar='Gmail', required=True, help='Gmail Account')
+    parser.add_argument('-p', dest='password', metavar='Password', required=True, help='Gmail Password')
 
-    args = Args()
-    parser.parse_args(namespace=args)
-
+    args = parser.parse_args(namespace=Args())
+    
     # request service
     with requests.Session() as session:
         # 首頁
@@ -35,10 +35,10 @@ if __name__ == '__main__':
             # 單程
             'SearchFlights[0].Direction': 'OneWay',
             # 起程地
-            'SearchFlights[0].DepartureStationCode': args.departure,
+            'SearchFlights[0].DepartureStationCode': 'TPE',
             # 抵達地
             'SearchFlights[0].ArrivalStationCode': args.arrival,
-            # '出發日期
+            # 出發日期
             'SearchFlights[0].DepartureDate': args.date,
             # 成人
             'PassengerTypes[0].Key': 'Adult',
@@ -59,9 +59,27 @@ if __name__ == '__main__':
         # 解析HTML
         parser = etree.HTMLParser(encoding=response.encoding, remove_blank_text=True)
         root = etree.HTML(response.text, parser=parser)
-        # result = etree.tostring(root, encoding=sys.stdout.encoding, pretty_print=True, method='html')
-        # 查詢有結果
-        if root.xpath("//table[@class='select_table table_type1']/tbody//input"):
-            pass
+        # 查詢結果
+        if root.xpath("//table[contains(@class,'select_table')]/tbody//input"):
+            message = '查詢結果已可購票! 請盡速至官網訂購機票!'
+        elif root.xpath("//table[@class='select_table table_type1']/tbody//td[text()='%s']" % u'查無航班請重新選擇'):
+            sys.exit()
+        else:
+            message = '查詢結果異常!\n\n' + etree.tostring(root, encoding='utf-8', pretty_print=True, method='html')
+
+        # 寄送信件
+        try:
+            # 信件內容
+            text = MIMEText(message)
+            text['Subject'] = '復興航空早鳥查票程式'
+            text['From'] = args.gmail
+            text['To'] = args.gmail
+            # 登入伺服器
+            server = smtplib.SMTP_SSL(host='smtp.gmail.com')
+            server.login(args.gmail, args.password)
+            server.sendmail(args.gmail, args.gmail, text.as_string())
+        finally:
+            # 離開
+            server.quit()
         
         

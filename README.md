@@ -1,6 +1,6 @@
 # TransAsia
 
-This is a Python code for checking TransAisa Airways' passenger ticket available.
+This is a Python code for checking TransAisa Airways early bird promotion available.
 
 ## Requirement
 
@@ -11,13 +11,14 @@ This is a Python code for checking TransAisa Airways' passenger ticket available
 ## Usage
 
 ```
-usage: tna.py [-h] [-d {TPE,KIX}] -a {TPE,KIX} -t DATE
+usage: tna.py [-h] [-a {KIX,NRT,OKA,CTS,KHD,AKJ}] [-d YYYY/MM/DD] [-m Gmail]
+              [-p Password]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d {TPE,KIX}, --departure {TPE,KIX}
-                        Departure Station Code
-  -a {TPE,KIX}, --arrival {TPE,KIX}
+  -a {KIX,NRT,OKA,CTS,KHD,AKJ}
                         Arrival Station Code
-  -t DATE, --date DATE  Departure Date (YYYY/MM/DD)
+  -d YYYY/MM/DD         Departure Date
+  -m Gmail              Gmail Account
+  -p Password           Gmail Password
 ```
