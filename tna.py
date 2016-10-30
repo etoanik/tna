@@ -18,8 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', dest='arrival', choices=['KIX', 'NRT', 'OKA', 'CTS', 'KHD', 'AKJ'], required=True, help='Arrival Station Code')
     parser.add_argument('-d', dest='date', metavar='YYYY/MM/DD', required=True, help='Departure Date')
-    parser.add_argument('-m', dest='gmail', metavar='Gmail', required=True, help='Gmail Account')
-    parser.add_argument('-p', dest='password', metavar='Password', required=True, help='Gmail Password')
+    parser.add_argument('-m', dest='gmail', metavar='Gmail', help='Gmail Account')
 
     args = parser.parse_args(namespace=Args())
     
@@ -63,23 +62,26 @@ if __name__ == '__main__':
         if root.xpath("//table[contains(@class,'select_table')]/tbody//input"):
             message = '查詢結果已可購票! 請盡速至官網訂購機票!'
         elif root.xpath("//table[@class='select_table table_type1']/tbody//td[text()='%s']" % u'查無航班請重新選擇'):
+            message = '查無航班請重新選擇'
             sys.exit()
         else:
             message = '查詢結果異常!\n\n' + etree.tostring(root, encoding='utf-8', pretty_print=True, method='html')
 
         # 寄送信件
-        try:
-            # 信件內容
-            text = MIMEText(message)
-            text['Subject'] = '復興航空早鳥查票程式'
-            text['From'] = args.gmail
-            text['To'] = args.gmail
-            # 登入伺服器
-            server = smtplib.SMTP_SSL(host='smtp.gmail.com')
-            server.login(args.gmail, args.password)
-            server.sendmail(args.gmail, args.gmail, text.as_string())
-        finally:
-            # 離開
-            server.quit()
+        if args.gmail:
+            try:
+                # 信件內容
+                text = MIMEText(message)
+                text['Subject'] = '復興航空早鳥查票程式'
+                text['From'] = 'service@tna.com.tw'
+                text['To'] = args.gmail
+                # 登入伺服器
+                server = smtplib.SMTP(host='msa.hinet.net')
+                server.sendmail('service@tna.com.tw', args.gmail, text.as_string())
+            finally:
+                # 離開
+                server.quit()
+        else:
+            sys.exit()
         
         
