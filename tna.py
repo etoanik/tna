@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', dest='arrival', choices=['KIX', 'NRT', 'OKA', 'CTS', 'KHD', 'AKJ'], required=True, help='Arrival Station Code')
     parser.add_argument('-d', dest='date', metavar='YYYY/MM/DD', required=True, help='Departure Date')
-    parser.add_argument('-m', dest='gmail', metavar='Gmail', help='Gmail Account')
+    parser.add_argument('-m', dest='mail', metavar='Mail', help='Mail Account')
 
     args = parser.parse_args(namespace=Args())
     
@@ -68,16 +68,16 @@ if __name__ == '__main__':
             message = '查詢結果異常!\n\n' + etree.tostring(root, encoding='utf-8', pretty_print=True, method='html')
 
         # 寄送信件
-        if args.gmail:
+        if args.mail:
             try:
                 # 信件內容
                 text = MIMEText(message)
                 text['Subject'] = '復興航空早鳥查票程式'
                 text['From'] = 'service@tna.com.tw'
-                text['To'] = args.gmail
+                text['To'] = args.mail
                 # 登入伺服器
                 server = smtplib.SMTP(host='msa.hinet.net')
-                server.sendmail('service@tna.com.tw', args.gmail, text.as_string())
+                server.sendmail('service@tna.com.tw', args.mail, text.as_string())
             finally:
                 # 離開
                 server.quit()

@@ -11,14 +11,12 @@ This is a Python code for checking TransAisa Airways early bird promotion availa
 ## Usage
 
 ```
-usage: tna.py [-h] [-a {KIX,NRT,OKA,CTS,KHD,AKJ}] [-d YYYY/MM/DD] [-m Gmail]
-              [-p Password]
+usage: tna.py [-h] -a {KIX,NRT,OKA,CTS,KHD,AKJ} -d YYYY/MM/DD [-m Mail]
 
 optional arguments:
   -h, --help            show this help message and exit
   -a {KIX,NRT,OKA,CTS,KHD,AKJ}
                         Arrival Station Code
   -d YYYY/MM/DD         Departure Date
-  -m Gmail              Gmail Account
-  -p Password           Gmail Password
+  -m Mail               Mail Account
 ```
