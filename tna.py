@@ -61,11 +61,14 @@ if __name__ == '__main__':
         # 查詢結果
         if root.xpath("//table[contains(@class,'select_table')]/tbody//input"):
             message = '查詢結果已可購票! 請盡速至官網訂購機票!'
+            print 'Message:', message
         elif root.xpath("//table[@class='select_table table_type1']/tbody//td[text()='%s']" % u'查無航班請重新選擇'):
             message = '查無航班請重新選擇'
+            print 'Message:', message
             sys.exit()
         else:
             message = '查詢結果異常!\n\n' + etree.tostring(root, encoding='utf-8', pretty_print=True, method='html')
+            print 'Message:', message
 
         # 寄送信件
         if args.mail:
